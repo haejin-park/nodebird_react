@@ -31,10 +31,6 @@ if(process.env.NODE_ENV === 'production'){
     //     origin: 'http://nodebird.com',
     //     credentials: true,
     // }));
-    app.use(cors({
-        origin: 'http://13.125.122.77',
-        credentials: true,
-    }));
 } else {
     app.use(morgan('dev'));
 }
@@ -62,9 +58,6 @@ app.get('/', (req, res) =>{
     res.send('hello express');
 });
 
-app.get('/',(req, res) => {
-    res.send('hello api');
-});
 app.use('/posts', postsRouter);
 app.use('/post', postRouter);
 app.use('/user', userRouter);
