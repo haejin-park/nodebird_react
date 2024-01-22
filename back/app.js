@@ -27,10 +27,10 @@ if(process.env.NODE_ENV === 'production'){
     app.use(morgan('combined'));
     app.use(hpp());
     app.use(helmet());
-    // app.use(cors({
-    //     origin: 'http://nodebird.com',
-    //     credentials: true,
-    // }));
+    app.use(cors({
+        origin: ['http://nodebird.com', 'http://13.125.122.77'],
+        credentials: true,
+    }));
 } else {
     app.use(morgan('dev'));
 }
@@ -46,11 +46,11 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET,
-    // cookie: {
-    //     httpOnly: true, //자바스크립트로 접근하지못하게
-    //     secure: false, //일단 false로 하고 https적용할 땐 ture
+    cookie: {
+        httpOnly: true, //자바스크립트로 접근하지못하게
+        secure: false, //일단 false로 하고 https적용할 땐 ture
     //     domain: process.env.NODE_ENV = 'production' && '.nodebirdcom' //도메인 사용할 경우 
-    // },
+    },
 }));
 app.use(passport.initialize());
 app.use(passport.session());
