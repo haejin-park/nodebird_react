@@ -60,7 +60,14 @@ const PostForm = () => {
                 style={{ width: '100%' }} 
             />
             <div>
-                <input type="file" name="image" multiple hidden ref={imageInput} onChange={onChangeImages}/>
+                <input 
+                    type="file" 
+                    name="image" 
+                    multiple hidden 
+                    ref={imageInput} 
+                    onChange={onChangeImages}
+                    key={imagePaths.join(',')} // imagePaths가 변경될 때마다 강제 리렌더링(imagePaths 배열의 모든 항목을 문자열로 결합하면 배열이 변경될 때마다 다른 key 값이 생성되어 input 태그가 새로운 요소로 간주되고 리렌더링 됨)
+                />
                 <Button onClick={onClickImageUpload}>이미지 업로드</Button>
                 <Button type="primary" style={{float:'right'}} htmlType="submit">짹짹</Button>
             </div>
