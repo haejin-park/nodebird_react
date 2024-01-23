@@ -19,6 +19,7 @@ const NiciknameEditForm = () => {
     return (
         <Form 
             style={style}
+            onFinish={onSubmit}
         >
             <Input.Search 
                 value={nickname}
