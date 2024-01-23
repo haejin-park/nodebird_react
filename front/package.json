@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx browserslist@latest --update-db && NODE_OPTIONS=--openssl-legacy-provider next -p 3060",
-    "build": "cross-env ANALYZE=true NODE_ENV=production next build",
+    "build": "npx browserslist@latest --update-db && cross-env ANALYZE=true NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider next build",
     "start": "cross-env NODE_ENV=production next start -p 80",
     "lint": "eslint ."
   },
