@@ -19,7 +19,7 @@ const Global = createGlobalStyle`
         margin-left: 0 !important;
     }
 
-    .ant-col: first-child {
+    .ant-col:first-child {
         padding-left: 0 !important;
     }
 
@@ -35,7 +35,7 @@ const AppLayout = ({ children }) => {
     }, [searchInput]);
     return(
         <div>
-            <Global />
+            {/* <Global /> */}
             <Menu mode="horizontal">
                 <Menu.Item>
                     <Link href="/"><a>노드버드</a></Link>
