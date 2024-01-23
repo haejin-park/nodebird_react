@@ -47,7 +47,7 @@ const PostForm = () => {
         const onRemoveImage = useCallback((index) => ()=> {
             dispatch({
                 type: REMOVE_IMAGE,
-                dat: index,
+                data: index,
             });
         });
     return (
