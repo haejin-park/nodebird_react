@@ -35,7 +35,7 @@ if(process.env.NODE_ENV === 'production'){
     app.use(morgan('dev'));
 }
 app.use(cors({
-    origin: ['http://localhost:3060', 'http://nodebird.com'],
+    origin: ['http://localhost:3060', 'http://luckyhaejin.com'],
     credentials:true
 }));
 app.use('/', express.static(path.join(__dirname, 'uploads')));
@@ -49,7 +49,7 @@ app.use(session({
     cookie: {
         httpOnly: true, //자바스크립트로 접근하지못하게
         secure: false, //일단 false로 하고 https적용할 땐 ture
-        domain: process.env.NODE_ENV = 'production' && '.nodebirdcom' //도메인 사용할 경우 
+        domain: process.env.NODE_ENV = 'production' && '.luckyhaejin.com' //도메인 사용할 경우 
     },
 }));
 app.use(passport.initialize());
