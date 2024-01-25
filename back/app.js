@@ -24,6 +24,7 @@ db.sequelize.sync()
     }).catch(console.error);
 passportConfig();
 if(process.env.NODE_ENV === 'production'){
+    app.set('trust proxy', 1);
     app.use(morgan('combined'));
     app.use(hpp());
     app.use(helmet());
@@ -43,6 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
+    proxy: true,
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET,
