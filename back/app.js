@@ -24,7 +24,6 @@ db.sequelize.sync()
     }).catch(console.error);
 passportConfig();
 if(process.env.NODE_ENV === 'production'){
-    app.set('trust proxy', 1);
     app.use(morgan('combined'));
     app.use(hpp());
     app.use(helmet());
@@ -35,16 +34,11 @@ if(process.env.NODE_ENV === 'production'){
 } else {
     app.use(morgan('dev'));
 }
-app.use(cors({
-    origin: ['http://localhost:3060', 'http://luckyhaejin.com'],
-    credentials:true
-}));
 app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
-    proxy: true,
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET,
