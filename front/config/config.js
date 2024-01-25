@@ -1,1 +1,1 @@
-export const backUrl = 'http://api.luckyhaejin.com';
+export const backUrl = process.env.NODE_ENV === 'production' ?  'https://api.luckyhaejin.com' : 'http://localhost:3065';

@@ -24,15 +24,20 @@ db.sequelize.sync()
     }).catch(console.error);
 passportConfig();
 if(process.env.NODE_ENV === 'production'){
+    app.set('trust proxy', 1); // trust first proxy
     app.use(morgan('combined'));
     app.use(hpp());
     app.use(helmet());
     app.use(cors({
-        origin: 'http://luckyhaejin.com',
+        origin: 'https://luckyhaejin.com',
         credentials: true,
     }));
 } else {
     app.use(morgan('dev'));
+    app.use(cors({
+        origin: true, // 모든 도메인의 요청을 허용
+        credentials: true,
+    }));
 }
 app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
@@ -42,9 +47,10 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     secret: process.env.COOKIE_SECRET,
+    proxy: process.env.NODE_ENV === 'production', //https적용할 땐 ture 아닐땐 false
     cookie: {
         httpOnly: true, //자바스크립트로 접근하지못하게
-        secure: false, //일단 false로 하고 https적용할 땐 ture
+        secure: process.env.NODE_ENV === 'production', //https적용할 땐 ture 아닐땐 false
         domain: process.env.NODE_ENV = 'production' && '.luckyhaejin.com' //도메인 사용할 경우 
     },
 }));
@@ -59,7 +65,7 @@ app.use('/post', postRouter);
 app.use('/user', userRouter);
 app.use('/hashtag', hashtagRouter);
 
-app.listen(80, () => {
+app.listen(3065, () => {
     console.log('서버 실행 중');
 });
 
