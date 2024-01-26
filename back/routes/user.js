@@ -6,7 +6,7 @@ const passport = require('passport');
 const {isLoggedIn, isNotLoggedIn} = require('./middlewares');
 const { Op } = require('sequelize');
 
-router.get('/', async(req, res, next) => { 
+router.get('/', async(req, res, next) => { //GET /user
     try {
         if(req.user) {
             const fullUserWithoutPassword = await User.findOne({
@@ -36,7 +36,6 @@ router.get('/', async(req, res, next) => {
         next(error);
     }
 });
-
 
 router.get('/followers', isLoggedIn, async (req, res, next) => { //GET /user/followers
     try {
@@ -106,6 +105,7 @@ router.post('/login', isNotLoggedIn, (req, res, next)=> { //POST /user/login
         });
     })(req, res, next);
 }); 
+
 router.post('/', isNotLoggedIn, async (req, res, next) => { 
     try {
         const exUser = await User.findOne({
@@ -128,6 +128,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {
         next(error); //500
     }
 });
+
 router.post('/logout', isLoggedIn, (req, res) => { // POST /user/logout
     req.logout((err) => {
         if (err) {
@@ -138,6 +139,7 @@ router.post('/logout', isLoggedIn, (req, res) => { // POST /user/logout
         res.send('ok');
     });
 });
+
 router.patch('/nickname', isLoggedIn, async (req, res, next) => { // PATCH /user/nickname
     try {
         await User.update({
@@ -161,9 +163,7 @@ router.get('/:userId/posts', async(req, res, next) => { //GET /user/1/posts
         const posts = await Post.findAll({
             where,
             limit: 10,
-            order: [
-                ['createdAt', 'DESC'],
-            ],
+            order: [['createdAt', 'DESC']],
             include: [{
                 model: User,
                 attributes: ['id', 'nickname'],
@@ -199,7 +199,6 @@ router.get('/:userId/posts', async(req, res, next) => { //GET /user/1/posts
 
 });
 
-
 router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => { //PATCH /user/1/follow
     try {
         const user = await User.findOne({where: {id: req.params.userId}});
@@ -227,6 +226,7 @@ router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => { //DELET
         next(error);
     }
 });
+
 router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { //DELETE /user/follower/1
     try {
         const user = await User.findOne({ where: {id: req.params.userId}});
@@ -240,8 +240,6 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { //DEL
         next(error);
     }
 });
-
-
 
 router.get('/:userId', async(req, res, next) => {  //GET /user/1
     try {
@@ -267,7 +265,7 @@ router.get('/:userId', async(req, res, next) => {  //GET /user/1
             const data = fullUserWithoutPassword.toJSON();
             data.Posts = data.Posts.length;
             data.Followers = data.Followers.length;
-            data.followings = data.Followings.length;
+            data.Followings = data.Followings.length;
             res.status(200).json(data);
         }  else { 
             res.status(404).json('존재하지 않는 사용자 입니다.')

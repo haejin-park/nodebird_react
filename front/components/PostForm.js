@@ -10,9 +10,9 @@ const PostForm = () => {
         const [text, onChangeText, setText] = useInput('');
         useEffect(() => {
             if(addPostDone) {
-                setText('')
+                setText('');
             }
-        }, [addPostDone])
+        }, [addPostDone]);
 
         const onSubmit = useCallback(()=> {
             if(!text || !text.trim()) {

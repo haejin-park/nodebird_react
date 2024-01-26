@@ -53,7 +53,8 @@ const User = () => {
             {userInfo && (userInfo.id !== me?.id)
             ? (
                 <Card 
-                    action={[
+                    style={{ marginBottom: 20 }}
+                    actions={[
                         <div key="twit">
                             짹짹
                             <br />
@@ -65,6 +66,7 @@ const User = () => {
                             {userInfo.Followings}
                         </div>,
                         <div key="follower">
+                            팔로워
                             <br />
                             {userInfo.Followers}
                         </div>,
@@ -102,6 +104,6 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
     });
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();
-    return {props: {}};
+    // return {props: {}};
 });
 export default User;

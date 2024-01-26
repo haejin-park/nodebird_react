@@ -49,7 +49,8 @@ export const initialState = {
     changeNicknameDone: false,
     changeNicknameError:null,
 
-    me:null
+    me:null,
+    userInfo:null
 }
 
 export const LOAD_FOLLOWERS_REQUEST = 'LOAD_FOLLOWERS_REQUEST';
@@ -166,7 +167,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
         
         case LOAD_USER_SUCCESS:
             draft.loadUserLoading = false;
-            draft.me = action.data;
+            draft.userInfo = action.data;
             draft.loadUserDone = true;
             break;
 

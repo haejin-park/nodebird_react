@@ -88,9 +88,10 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { //POST /
 });
 
 router.post('/images', isLoggedIn, upload.array('image'),(req, res, next) => { //POST /post/images
-    console.log(req.files);
+console.log(req.files);
     res.json(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/')));
 });
+
 router.get('/:postId', async (req, res, next) => { //GET /post/1/
     try {
         const post = await Post.findOne({
@@ -143,6 +144,7 @@ router.get('/:postId', async (req, res, next) => { //GET /post/1/
         next(error);
     }
 });
+
 router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => { //POST /post/1/retweet
     try {
         const post = await Post.findOne({
@@ -217,6 +219,7 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => { //POST /
         next(error);
     }
 });
+
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { //POST /post/1/comment
     try {
         const post = await Post.findOne({
@@ -243,6 +246,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { //POST /
         next(error);
     }
 });
+
 router.patch('/:postId/like', isLoggedIn, async(req, res, next) => { //PATCH /post/1/like
     try {
         const post = await Post.findOne({where: {id: req.params.postId}});
@@ -256,6 +260,7 @@ router.patch('/:postId/like', isLoggedIn, async(req, res, next) => { //PATCH /po
         next(error);
     }
 });
+
 router.delete('/:postId/like', isLoggedIn, async(req, res, next) => { //DELETE / post/1/like
     try {
         const post = await Post.findOne({where: {id: req.params.postId}});
@@ -269,6 +274,32 @@ router.delete('/:postId/like', isLoggedIn, async(req, res, next) => { //DELETE /
         next(error);
     }
 });
+
+router.patch('/:postId', isLoggedIn, async(req, res, next) => { //PATCH / post/1
+    try {
+        const hashtags = req.body.content.match(/#[^\s#]+/g);
+        await Post.update({
+            content: req.body.content
+        },{
+            where:{
+                id:req.params.postId,
+                UserId: req.user.id,
+            },
+        });
+        const post = await Post.findOne({where: {id:req.params.postId}});
+        if(hashtags){
+            const result = await Promise.all(hashtags.map((tag) => Hashtag.findOrCreate({
+                where: {name: tag.slice(1).toLowerCase()}
+            })));
+            await post.setHashtags(result.map((v) => v[0]));
+        }
+        res.status(200).json({PostId: parseInt(req.params.postId, 10), content: req.body.content});
+    } catch(error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 router.delete('/:postId', isLoggedIn, async(req, res, next) => { // DELETE /post/10
     try {
         await Post.destroy({
