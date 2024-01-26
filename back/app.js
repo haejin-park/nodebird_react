@@ -51,7 +51,7 @@ app.use(session({
     cookie: {
         httpOnly: true, //자바스크립트로 접근하지못하게
         secure: process.env.NODE_ENV === 'production', //https적용할 땐 ture 아닐땐 false
-        domain: process.env.NODE_ENV = 'production' && '.luckyhaejin.com' //도메인 사용할 경우 
+        domain: process.env.NODE_ENV === 'production' && '.luckyhaejin.com' //도메인 사용할 경우 
     },
 }));
 app.use(passport.initialize());
