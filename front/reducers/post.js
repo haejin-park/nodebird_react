@@ -3,7 +3,8 @@ import produce from '../util/produce';
 export const initialState = {
     mainPosts:[],
     singlePost: null,
-    imagePaths: [], //게시물 저장 경로
+    imagePaths: [], //추가할 게시물 저장 경로
+    updateImagePaths: [], //수정할 게시물 저장 경로
     hasMorePosts: true,
 
     likePostLoading: false, //좋아요 로드 완료시 true
@@ -42,6 +43,10 @@ export const initialState = {
     uploadImagesDone: false,
     uploadImagesError: null,
 
+    updateImagesLoading: false, //수정된 이미디 업로드 로드 완료시 true
+    updateImagesDone: false,
+    updateImagesError: null,
+
     retweetLoading: false, //이미디 업로드 로드 완료시 true
     retweetDone: false,
     retweetError: null,
@@ -51,6 +56,10 @@ export const initialState = {
 export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
 export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
 export const UPLOAD_IMAGES_FAILURE = 'UPLOAD_IMAGES_FAILURE';
+
+export const UPDATE_IMAGES_REQUEST = 'UPDATE_IMAGES_REQUEST';
+export const UPDATE_IMAGES_SUCCESS = 'UPDATE_IMAGES_SUCCESS';
+export const UPDATE_IMAGES_FAILURE = 'UPDATE_IMAGES_FAILURE';
 
 export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
 export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
@@ -97,6 +106,9 @@ export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
 export const RETWEET_FAILURE = 'RETWEET_FAILURE';
 
 export const REMOVE_IMAGE = 'REMOVE_IMAGE';
+export const REMOVE_UPDATE_IMAGE = 'REMOVE_UPDATE_IMAGE';
+export const REMOVE_UPDATED_IMAGE = 'REMOVE_UPDATED_IMAGE';
+
 
 export const addPost = (data) => ({
     type: ADD_POST_REQUEST,
@@ -116,6 +128,18 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
             draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data);
             break;
 
+        case REMOVE_UPDATE_IMAGE: 
+            draft.updateImagePaths = draft.updateImagePaths.filter((v, i) => i !== action.data);
+            break;
+
+        case REMOVE_UPDATED_IMAGE: 
+            // console.log("REMOVE_UPDATED_IMAGE에서 action.data", action.data);
+            const postIndex = draft.mainPosts.findIndex((v) => v.id === action.data.id)
+            if(postIndex !== -1) {
+                draft.mainPosts[postIndex] ={...draft.mainPosts[postIndex], ...action.data};
+            }
+            break;   
+            
         case UPLOAD_IMAGES_REQUEST:
             draft.uploadImagesLoading = true;
             draft.uploadImagesDone = false;
@@ -134,6 +158,23 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
             draft.uploadImagesError = action.error;
             break;
 
+        case UPDATE_IMAGES_REQUEST:
+            draft.updateImagesLoading = true;
+            draft.updateImagesDone = false;
+            draft.updateImagesError = null;
+            break;
+
+        case UPDATE_IMAGES_SUCCESS: {
+            draft.updateImagePaths = draft.updateImagePaths.concat(action.data);
+            draft.updateImagesLoading = false;
+            draft.updateImagesDone = true;
+            break;
+        }
+            
+        case UPDATE_IMAGES_FAILURE:
+            draft.updateImagesLoading = false;
+            draft.updateImagesError = action.error;
+            break;
             
         case LIKE_POST_REQUEST:
             draft.likePostLoading = true;
@@ -240,8 +281,12 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 
         case UPDATE_POST_SUCCESS:
             draft.updatePostLoading = false;
-            draft.updatePostDone = true;
-            draft.mainPosts.find((v) => v.id === action.data.PostId).content = action.data.content;
+            draft.updatePostDone = true;            
+            const index = draft.mainPosts.findIndex((v) => v.id === action.data.id)
+            if(index !== -1) {
+                draft.mainPosts[index] = action.data;
+            }
+            draft.updateImagePaths = [];
             break;
 
         case UPDATE_POST_FAILURE:

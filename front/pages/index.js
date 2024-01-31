@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {END} from 'redux-saga';
 import axios from 'axios';
@@ -13,6 +13,7 @@ const Home = () => {
     const { me } = useSelector((state) => state.user);
     const mainPosts = useSelector((state) => state.post.mainPosts);
     const { hasMorePosts, loadPostsLoading,retweetError } = useSelector((state) => state.post);
+    // console.log("pages/index에서 mainPosts",mainPosts);
     useEffect(()=> {
         if(retweetError) {
             alert(retweetError);

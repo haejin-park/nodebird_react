@@ -7,7 +7,31 @@ import { UPLOAD_IMAGES_REQUEST, REMOVE_IMAGE, ADD_POST_REQUEST } from '../reduce
 const PostForm = () => {
         const {imagePaths, addPostDone} = useSelector((state) => state.post);
         const dispatch = useDispatch();
-        const [text, onChangeText, setText] = useInput('');
+        const [text, onChangeText, setText] = useInput('');   
+        
+        const imageInput =  useRef();
+
+        const onClickImageUpload = useCallback(() => {
+            imageInput.current.click();
+        }, [imageInput.current]);
+
+        const onChangeImages = useCallback((e) => {
+            const imageFormData = new FormData();
+            [].forEach.call(e.target.files, (f) => {
+                imageFormData.append('image', f);
+            });
+            dispatch({
+                type: UPLOAD_IMAGES_REQUEST,
+                data: imageFormData,
+            });
+        });
+
+        const onRemoveImage = useCallback((index) => () => {
+            dispatch({
+                type: REMOVE_IMAGE,
+                data: index,
+            });
+        });
         useEffect(() => {
             if(addPostDone) {
                 setText('');
@@ -28,28 +52,7 @@ const PostForm = () => {
                 data: formData,
             });
         },[text, imagePaths]);
-
-        const imageInput =  useRef();
-        const onClickImageUpload = useCallback(() => {
-            imageInput.current.click();
-        }, [imageInput.current]);
-    
-        const onChangeImages = useCallback((e) => {
-            const imageFormData = new FormData();
-            [].forEach.call(e.target.files, (f) => {
-                imageFormData.append('image', f);
-            });
-            dispatch({
-                type: UPLOAD_IMAGES_REQUEST,
-                data: imageFormData,
-            });
-        });
-        const onRemoveImage = useCallback((index) => ()=> {
-            dispatch({
-                type: REMOVE_IMAGE,
-                data: index,
-            });
-        });
+       
     return (
         <Form style={{ margin: '10px 0 20px'}} encType="multipart/form-data" onFinish={onSubmit}>
             <Input.TextArea 

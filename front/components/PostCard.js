@@ -13,25 +13,34 @@ import moment from 'moment';
 moment.locale('ko');
 const PostCard = ({post}) => {
     const dispatch = useDispatch();
-    const { removePostLoading } = useSelector((state) => state.post);
+    const { updateImagePaths, removePostLoading } = useSelector((state) => state.post);
     const [commentFormOpened, setCommentFormOpened] = useState(false);
     const id = useSelector((state) => state.user.me?.id);
     const [editMode, setEditMode] = useState(false);
+    const [updateImages, setUpdateImages] = useState(post.Images || []);
+    // console.log('PostCard에서 post ', post);
+    // console.log('PostCard에서 updateImages ', updateImages);
+
     const onClickUpdate = useCallback(() => {
         setEditMode(true);
     },[]); 
     const onCancelUpdate = useCallback(() => {
         setEditMode(false);
     }, []);
-    const onChangePost = useCallback((editText) => () =>  {
+    const onChangePost = useCallback((editText) => () => {
+        const formData = new FormData();
+        formData.append('updateImages', updateImages);
+        updateImagePaths.forEach((p) => {
+            formData.append('image', p);
+        });
+        formData.append('content', editText);
+        formData.append('PostId', post.id);        
         dispatch({
             type: UPDATE_POST_REQUEST,
-            data: {
-                PostId: post.id,
-                content: editText,
-            },
+            data: formData,
         });
-    },[post]);
+        setEditMode(false);
+    },[post, updateImagePaths, setEditMode]);
     const onLike = useCallback(() => {
         if(!id) {
             return alert('로그인이 필요합니다.');
@@ -79,7 +88,14 @@ const PostCard = ({post}) => {
     return (
         <div style = {{marginBottom:20}}>
             <Card
-                cover={post.Images[0] && <PostImages images={post.Images}/>}
+                cover={updateImages[0] && 
+                    <PostImages 
+                        imagePost={post} 
+                        editMode={editMode} 
+                        updateImages={updateImages}
+                        setUpdateImages={setUpdateImages}                    
+                    />
+                }
                 actions={[
                     <RetweetOutlined key="retweet" onClick={onRetweet}/>,
                     liked
@@ -109,13 +125,19 @@ const PostCard = ({post}) => {
                         >
                             <div style={{float: 'right'}}>{moment(post.createdAt).format('YYYY.MM.DD')}</div>
                             <Card.Meta 
-                                avatar={(
+                                avatar={( 
                                         <Link href={`/user/${post.Retweet.User.id}`} prefecth={false}>
                                             <a><Avatar>{post.Retweet.User.nickname[0]}</Avatar></a>
                                         </Link>
                                         )}
                                 title={post.Retweet.User.nickname}
-                                description={<PostCardContent onCancelUpdate={onCancelUpdate} onChangePost={onChangePost} postData={post.Retweet.content}/>}
+                                description={
+                                    <PostCardContent 
+                                        postContent={post.Retweet.content}
+                                        onChangePost={onChangePost} 
+                                        onCancelUpdate={onCancelUpdate} 
+                                    />
+                                }
                             />
                         </Card>
                     )
@@ -129,7 +151,14 @@ const PostCard = ({post}) => {
                                         </Link>
                                         )}
                                 title={post.User.nickname}
-                                description={<PostCardContent editMode={editMode} onCancelUpdate={onCancelUpdate} onChangePost={onChangePost} postData={post.content}/>}
+                                description={
+                                    <PostCardContent 
+                                        postContent={post.content}
+                                        editMode={editMode} 
+                                        onChangePost={onChangePost} 
+                                        onCancelUpdate={onCancelUpdate} 
+                                    />
+                                }
                             />
                         </>
                     )

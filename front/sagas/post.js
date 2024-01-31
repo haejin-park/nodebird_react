@@ -12,7 +12,8 @@ import {
     UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, 
     RETWEET_REQUEST, RETWEET_SUCCESS, RETWEET_FAILURE, 
     LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_POST_FAILURE, 
-    UPDATE_POST_REQUEST, UPDATE_POST_SUCCESS, UPDATE_POST_FAILURE
+    UPDATE_POST_REQUEST, UPDATE_POST_SUCCESS, UPDATE_POST_FAILURE, 
+    UPDATE_IMAGES_REQUEST, UPDATE_IMAGES_SUCCESS, UPDATE_IMAGES_FAILURE
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
@@ -183,12 +184,19 @@ function* addPost(action) {
     }
 }
 
-function updatePostAPI(data){
-    return axios.patch(`/post/${data.PostId}`, data);
+function updatePostAPI(data){ //formData는 이렇게 get으로 가져와야함
+    const postId = data.get('PostId'); 
+    const content = data.get('content');  
+    const image = data.getAll('image'); 
+    // console.log("updatePostAPI에서 image", image);
+    return axios.patch(`/post/${postId}`, {content, image});
 }
 
 function* updatePost(action) {
     try{
+        // for (let [key, value] of action.data.entries()) {
+        //     console.log(`saga updatePost ${key}: ${value}`);
+        // }
         const result = yield call(updatePostAPI, action.data);
         yield put({
             type: UPDATE_POST_SUCCESS,
@@ -266,12 +274,35 @@ function* uploadImages(action) {
         });
     }
 }
+
+function updateImagesAPI(data) {
+    return axios.post('/post/images', data); //POST /post/images
+} 
+
+function* updateImages(action) {
+    try{
+        const result = yield call(updateImagesAPI, action.data);
+        yield put({
+            type: UPDATE_IMAGES_SUCCESS,
+            data: result.data
+        });
+    } catch(err) {
+        console.error(err);
+        yield put({
+            type: UPDATE_IMAGES_FAILURE,
+            error: err.response.data
+        });
+    }
+}
 function*  watchRetweet(){
     yield takeLatest(RETWEET_REQUEST, retweet);
 } 
 function*  watchUploadImages(){
     yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
 } 
+function*  watchUpdateImages(){
+    yield takeLatest(UPDATE_IMAGES_REQUEST, updateImages);
+}
 function*  watchLikePost(){
     yield takeLatest(LIKE_POST_REQUEST, likePost);
 } 
@@ -307,6 +338,7 @@ export default function* postSaga() {
     yield all([
         fork(watchRetweet),
         fork(watchUploadImages),
+        fork(watchUpdateImages),
         fork(watchLikePost),
         fork(watchUnlikePost),
         fork(watchLoadPost),

@@ -275,8 +275,11 @@ router.delete('/:postId/like', isLoggedIn, async(req, res, next) => { //DELETE /
     }
 });
 
-router.patch('/:postId', isLoggedIn, async(req, res, next) => { //PATCH / post/1
+router.patch('/:postId', isLoggedIn, upload.none(), async(req, res, next) => { //PATCH / post/1
     try {
+        // console.log("routes PostId", req.params.postId);
+        // console.log("routes content", req.body.content);
+        // console.log("routes image", req.body.image);
         const hashtags = req.body.content.match(/#[^\s#]+/g);
         await Post.update({
             content: req.body.content
@@ -287,13 +290,42 @@ router.patch('/:postId', isLoggedIn, async(req, res, next) => { //PATCH / post/1
             },
         });
         const post = await Post.findOne({where: {id:req.params.postId}});
+
         if(hashtags){
             const result = await Promise.all(hashtags.map((tag) => Hashtag.findOrCreate({
                 where: {name: tag.slice(1).toLowerCase()}
             })));
             await post.setHashtags(result.map((v) => v[0]));
         }
-        res.status(200).json({PostId: parseInt(req.params.postId, 10), content: req.body.content});
+        if(req.body.image){
+            if(Array.isArray(req.body.image)) { //이미지를 여러개 올리면 image: [냥쓰.png, 멍쓰.png] 이렇게 배열로
+               const images = await Promise.all(req.body.image.map((image) =>  Image.create({ src: image })));
+               await post.addImages(images);
+            } else {//이미지를 하나만 올리면 image: 냥쓰.png
+                const image = await Image.create({ src: req.body.image });
+                await post.addImages(image);
+            }
+        }
+        const fullPost = await Post.findOne({
+            where: {id: post.id},
+            include: [{
+                model: Image,
+            }, {
+                model: Comment,
+                include: [{
+                    model: User, //댓글 작성자
+                    attributes: ['id', 'nickname'],
+                }],
+            }, {
+                model: User,    //게시글 작성자
+                attributes: ['id', 'nickname'],
+            }, {
+                model: User,    //좋아요 누른사람
+                as: 'Likers',
+                attributes: ['id'],
+            }]
+        });
+        res.status(200).json(fullPost);
     } catch(error) {
         console.error(error);
         next(error);
