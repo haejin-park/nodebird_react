@@ -1,15 +1,15 @@
-import React, {useState, useCallback} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
-import { Card, Popover, Button, Avatar, List, Comment } from 'antd';
-import { RetweetOutlined, HeartTwoTone, HeartOutlined, MessageOutlined, EllipsisOutlined } from '@ant-design/icons';
-import PostImages from './PostImages';
-import CommentForm from './CommentForm';
-import PostCardContent from './PostCardContent';
-import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST, RETWEET_REQUEST, UPDATE_POST_REQUEST } from '../reducers/post';
-import FollowButton from './FollowButton';
-import Link from 'next/link';
+import { EllipsisOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, RetweetOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Comment, List, Popover } from 'antd';
 import moment from 'moment';
+import Link from 'next/link';
+import PropTypes from 'prop-types';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, RETWEET_REQUEST, UNLIKE_POST_REQUEST, UPDATE_POST_REQUEST } from '../reducers/post';
+import CommentForm from './CommentForm';
+import FollowButton from './FollowButton';
+import PostCardContent from './PostCardContent';
+import PostImages from './PostImages';
 moment.locale('ko');
 const PostCard = ({post}) => {
     const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const PostCard = ({post}) => {
     }, []);
     const onChangePost = useCallback((editText) => () => {
         const formData = new FormData();
-        formData.append('updateImages', updateImages);
+        // formData.append('updateImages', updateImages);
         updateImagePaths.forEach((p) => {
             formData.append('image', p);
         });

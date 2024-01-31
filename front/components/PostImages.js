@@ -13,15 +13,15 @@ const PostImages = ({imagePost, editMode, updateImages, setUpdateImages}) => {
     // console.log('PostCard에서 post ', post);
     // console.log('PostImages에서 updateImages ', updateImages);
 
-    const onRemoveImage = useCallback((index) => () => {
-        const updatedPostImages = post.Images.filter((_,i) => i !== index);
-        post.Images = [...updatedPostImages];
-        dispatch({
-            type: REMOVE_UPDATED_IMAGE,
-            data: post
-        });
-        setUpdateImages(updatedPostImages);
-    },[post, setUpdateImages]);
+    // const onRemoveImage = useCallback((index) => () => {
+    //     const updatedPostImages = post.Images.filter((_,i) => i !== index);
+    //     post.Images = [...updatedPostImages];
+    //     dispatch({
+    //         type: REMOVE_UPDATED_IMAGE,
+    //         data: post
+    //     });
+    //     setUpdateImages(updatedPostImages);
+    // },[post, setUpdateImages]);
 
     const onZoom = useCallback(() => {
         setShowImagesZoom(true);
@@ -32,16 +32,16 @@ const PostImages = ({imagePost, editMode, updateImages, setUpdateImages}) => {
     }, []);
 
     if(editMode) {
-        if(Array.isArray(updateImages)) {
+        if(Array.isArray(post.Images)) {
             return (
                 <>
-                    {updateImages.map((image, index) => (
+                    {post.Images.map((image, index) => (
                         <div key={image.id} style={{display: 'inline-block'}}>
-                            <img role="presentation" src={`${updateImages[index].src}`} alt={updateImages[index].src} onClick={onZoom} style={{width:'200px'}}/>
-                            <Button onClick={onRemoveImage(index)} style={{marginLeft:'30%'}}>제거</Button>
+                            <img role="presentation" src={`${post.Images[index].src}`} alt={post.Images[index].src} onClick={onZoom} style={{width:'200px'}}/>
+                            {/* <Button onClick={onRemoveImage(index)} style={{marginLeft:'30%'}}>제거</Button> */}
                         </div>
                     ))}
-                    {showImagesZoom && <ImagesZoom images={updateImages} onClose={onClose}/>}
+                    {showImagesZoom && <ImagesZoom images={post.Images} onClose={onClose}/>}
             
                 </>
             )
@@ -49,28 +49,28 @@ const PostImages = ({imagePost, editMode, updateImages, setUpdateImages}) => {
             return null;
         }     
     } else {
-        if(updateImages.length === 1){
+        if(post.Images.length === 1){
             return (
                 <>
-                    <img role="presentation" src={`${updateImages[0].src}`} alt={updateImages[0].src} onClick={onZoom}/>
-                    {showImagesZoom && <ImagesZoom images={updateImages} onClose={onClose}/>}
+                    <img role="presentation" src={`${post.Images[0].src}`} alt={post.Images[0].src} onClick={onZoom}/>
+                    {showImagesZoom && <ImagesZoom images={post.Images} onClose={onClose}/>}
             
                 </>
             )
         }
-        if(updateImages.length === 2){ 
+        if(post.Images.length === 2){ 
             return (
                 <>
-                    <img role="presentation" style={{width:'50%', display:'inline-block'}} src={`${updateImages[0].src}`} alt={updateImages[0].src} onClick={onZoom}/>
-                    <img role="presentation" style={{width:'50%', display:'inline-block'}} src={`${updateImages[1].src}`} onClick={onZoom}/>
-                    {showImagesZoom && <ImagesZoom images={updateImages} onClose={onClose}/>}
+                    <img role="presentation" style={{width:'50%', display:'inline-block'}} src={`${post.Images[0].src}`} alt={post.Images[0].src} onClick={onZoom}/>
+                    <img role="presentation" style={{width:'50%', display:'inline-block'}} src={`${post.Images[1].src}`} onClick={onZoom}/>
+                    {showImagesZoom && <ImagesZoom images={post.Images} onClose={onClose}/>}
                 </>
             )
         }
         return (
             <>
                 <div>
-                    <img role="presentation" style={{ width:'50%'}} src={`${updateImages[0].src}`} alt={updateImages[0].src} onClick={onZoom}/>
+                    <img role="presentation" style={{ width:'50%'}} src={`${post.Images[0].src}`} alt={post.Images[0].src} onClick={onZoom}/>
                     <div 
                         role="presentation"
                         style={{ width:'50%', display: 'inline-block', textAlign: 'center', verticalAlign:'middle'}}
@@ -78,11 +78,11 @@ const PostImages = ({imagePost, editMode, updateImages, setUpdateImages}) => {
                     >   
                         <PlusOutlined/>
                         <br />                 
-                        {updateImages.length -1}
+                        {post.Images.length -1}
                         개의 사진 더보기
                     </div>   
                 </div> 
-                {showImagesZoom && <ImagesZoom images={updateImages} onClose={onClose}/>}
+                {showImagesZoom && <ImagesZoom images={post.Images} onClose={onClose}/>}
             </>
         )
     }
